@@ -1,0 +1,89 @@
+name: gitops
+
+services:
+  frontend:
+    image: maestrops/frontend:9-1d8bdd2
+    env_file:
+      - frontend/.env
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    labels:
+      - "traefik.enable=true"
+      # HTTP Router
+      - "traefik.http.routers.frontend-http.rule=(Host(`test.idimma.com`)  || Host(`www.test.idimma.com`))"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+      # www to non-www redirect
+      - "traefik.http.routers.frontend-https.middlewares=www-to-non-www"
+      # HTTPS Router
+      - "traefik.http.routers.frontend-https.rule=(Host(`test.idimma.com`) || Host(`www.test.idimma.com`))"
+      - "traefik.http.routers.frontend-https.entrypoints=websecure"
+      - "traefik.http.routers.frontend-https.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.frontend-https.service=frontend" # optional
+
+    networks:
+      - app-network
+
+  backend:
+    image: maestrops/backend:8-cbbea3f
+    env_file:
+      - backend/.env
+    networks:
+      - app-network
+    labels:
+      - traefik.enable=true
+      # HTTP Router
+      - traefik.http.routers.backend-http.rule=((Host(`test.idimma.com`)  || Host(`www.test.idimma.com`)) && (PathPrefix(`/api`) || PathPrefix(`/redoc`) || PathPrefix(`/docs`)))
+      - traefik.http.routers.backend-http.entrypoints=web
+      - traefik.http.services.backend-http.loadbalancer.server.port=8000
+      # www to non-www redirect
+      - "traefik.http.routers.backend-https.middlewares=www-to-non-www"
+      # HTTPS Router
+      - traefik.http.routers.backend-https.rule=(Host(`test.idimma.com`) && (PathPrefix(`/api`) || PathPrefix(`/redoc`) || PathPrefix(`/docs`)))
+      - traefik.http.routers.backend-https.entrypoints=websecure
+      - traefik.http.routers.backend-https.tls.certresolver=letsencryptresolver
+      
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - app-network
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    labels:
+      - traefik.enable=true
+      # HTTP Router
+      - traefik.http.routers.adminer-http.rule=Host(`db.test.idimma.com`) || Host(`www.db.test.idimma.com`)
+      - traefik.http.routers.adminer-http.entrypoints=web
+      - traefik.http.services.adminer.loadbalancer.server.port=8080
+      # www to non-www redirect
+      - "traefik.http.routers.adminer-https.middlewares=www-to-non-www"
+      # HTTPS Router
+      - traefik.http.routers.adminer-https.rule=Host(`db.test.idimma.com`) || Host(`www.db.test.idimma.com`)
+      - traefik.http.routers.adminer-https.entrypoints=websecure
+      - traefik.http.routers.adminer-https.tls.certresolver=letsencryptresolver
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
+volumes:
+  postgres_data:
