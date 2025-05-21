@@ -20,6 +20,16 @@ def get_superuser_token_headers(client: TestClient) -> dict[str, str]:
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
     r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+    # --- Debugging ---
+    print(f"Login API Status Code: {r.status_code}")
+    print(f"Login Data: {login_data}")
+    try:
+        print(f"Login API Response JSON: {r.json()}")
+    except Exception as e:
+        print(f"Login API Response Text (not JSON or error parsing): {r.text}")
+        print(f"JSONDecodeError: {e}")
+    # --- End Debugging ---
+
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
