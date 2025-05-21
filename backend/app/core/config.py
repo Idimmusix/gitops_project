@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     DOMAIN: str = "localhost"
-    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    ENVIRONMENT: Literal["local", "staging", "production", "testing"] = "local"
 
     @computed_field  # type: ignore[misc]
     @property
@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str = ""
-
+    
     @computed_field  # type: ignore[misc]
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
@@ -65,6 +65,27 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
+
+
+
+    TEST_2_POSTGRES_SERVER: str
+    TEST_2_POSTGRES_PORT: int = 5432
+    TEST_2_POSTGRES_USER: str
+    TEST_2_POSTGRES_PASSWORD: str
+    TEST_2_POSTGRES_DB: str = ""
+    
+    @computed_field  # type: ignore[misc]
+    @property
+    def SQLALCHEMY_TEST_2_DATABASE_URI(self) -> PostgresDsn:
+        return MultiHostUrl.build(
+            scheme="postgresql+psycopg",
+            username=self.TEST_2_POSTGRES_USER,
+            password=self.TEST_2_POSTGRES_PASSWORD,
+            host=self.TEST_2_POSTGRES_SERVER,
+            port=self.TEST_2_POSTGRES_PORT,
+            path=self.TEST_2_POSTGRES_DB,
+        )
+
 
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
