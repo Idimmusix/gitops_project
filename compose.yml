@@ -2,7 +2,7 @@ name: gitops
 
 services:
   frontend:
-    image: ghcr.io/gitops_project/frontend:latest
+    image: ghcr.io/idimmusix/gitops_project-frontend:latest
     env_file:
       - frontend/.env
     depends_on:
@@ -27,7 +27,7 @@ services:
       - app-network
 
   backend:
-    image: ghcr.io/gitops_project/backend:latest
+    image: ghcr.io/idimmusix/gitops_project-backend:latest
     env_file:
       - backend/.env
     networks:

@@ -114,7 +114,7 @@ jobs:
           echo "Github Repository: $GITHUB_REPOSITORY"
           REPO_NAME="${GITHUB_REPOSITORY#*/}" # Extract the repository name from the full repository name
           echo "REPO_NAME: $REPO_NAME"
-          echo "IMAGE_NAME=ghcr.io/${REPO_NAME}/backend" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${REPO_NAME}-backend" >> $GITHUB_ENV
           echo "IMAGE_TAG_2=${{ github.run_number }}-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
@@ -151,7 +151,7 @@ jobs:
           echo "Github Repository: $GITHUB_REPOSITORY"
           REPO_NAME="${GITHUB_REPOSITORY#*/}" # Extract the repository name from the full repository name
           echo "REPO_NAME: $REPO_NAME"
-          echo "IMAGE_NAME=ghcr.io/${REPO_NAME}/backend" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${REPO_NAME}-backend" >> $GITHUB_ENV
           echo "IMAGE_TAG_2=${{ github.run_number }}-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Update Deployment YAML
