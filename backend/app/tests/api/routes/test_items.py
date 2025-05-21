@@ -6,6 +6,7 @@ from app.tests.utils.item import create_random_item
 
 
 def test_create_item(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     data = {"title": "Foo", "description": "Fighters"}

@@ -17,7 +17,7 @@ from app.tests.utils.utils import get_superuser_token_headers
 
 
 engine_2 = create_engine(str(settings.SQLALCHEMY_TEST_2_DATABASE_URI))
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def db() -> Generator[Session, None, None]:
     """Create a new database session for the test suite."""
     
