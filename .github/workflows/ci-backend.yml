@@ -149,6 +149,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          # For pull_request events, this fetches the head branch and checks it out.
+          # Otherwise, it checks out the normal ref.
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          fetch-depth: 0 
 
       - name: Set environment variables
         run: |
@@ -181,7 +186,6 @@ jobs:
             BRANCH_NAME="${{ github.ref_name }}"
             echo "Workflow not triggered by a Pull Request. BRANCH_NAME set to ref_name: $BRANCH_NAME"
           fi
-          git switch $BRANCH_NAME
           git add compose.yml
           git commit -m "Update Docker Image Tag to ${{ env.IMAGE_TAG_2 }}"
           git pull --rebase origin $BRANCH_NAME
