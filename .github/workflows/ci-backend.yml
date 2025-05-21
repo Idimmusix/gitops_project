@@ -172,7 +172,16 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          BRANCH_NAME=${{ github.head_ref }}
+          BRANCH_NAME=""
+          # Check if the event is a pull_request
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH_NAME="${{ github.head_ref }}"
+            echo "Workflow triggered by a Pull Request. BRANCH_NAME set to head_ref: $BRANCH_NAME"
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+            echo "Workflow not triggered by a Pull Request. BRANCH_NAME set to ref_name: $BRANCH_NAME"
+          fi
+          git switch $BRANCH_NAME
           git add compose.yml
           git commit -m "Update Docker Image Tag to ${{ env.IMAGE_TAG_2 }}"
           git pull --rebase origin $BRANCH_NAME
