@@ -51,7 +51,7 @@ jobs:
         env:
           POSTGRES_USER: app
           POSTGRES_PASSWORD: changethis123
-          POSTGRES_DB: app_2
+          POSTGRES_DB: app
           POSTGRES_HOST: localhost
         ports:
           - 5433:5432
@@ -90,8 +90,6 @@ jobs:
       - name: Debug Docker
         run: |
           docker ps -a
-          docker logs db
-          docker logs db_2
 
       - name: Run app
         run: |
@@ -174,7 +172,7 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          BRANCH_NAME=${{ github.ref_name }}
+          BRANCH_NAME=${{ github.head_ref }}
           git add compose.yml
           git commit -m "Update Docker Image Tag to ${{ env.IMAGE_TAG_2 }}"
           git pull --rebase origin $BRANCH_NAME
