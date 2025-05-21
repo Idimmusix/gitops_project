@@ -9,7 +9,7 @@ from app.models import User
 from app.utils import generate_password_reset_token
 
 
-def test_get_access_token(client: TestClient) -> None:
+def test_get_access_token(db: Session, client: TestClient) -> None:
     login_data = {
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
@@ -21,7 +21,7 @@ def test_get_access_token(client: TestClient) -> None:
     assert tokens["access_token"]
 
 
-def test_get_access_token_incorrect_password(client: TestClient) -> None:
+def test_get_access_token_incorrect_password(db: Session, client: TestClient) -> None:
     login_data = {
         "username": settings.FIRST_SUPERUSER,
         "password": "incorrect",
@@ -31,6 +31,7 @@ def test_get_access_token_incorrect_password(client: TestClient) -> None:
 
 
 def test_use_access_token(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     r = client.post(
@@ -43,6 +44,7 @@ def test_use_access_token(
 
 
 def test_recovery_password(
+    db: Session,
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     with (
@@ -59,6 +61,7 @@ def test_recovery_password(
 
 
 def test_recovery_password_user_not_exits(
+    db: Session,
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     email = "jVgQr@example.com"
@@ -70,10 +73,11 @@ def test_recovery_password_user_not_exits(
 
 
 def test_reset_password(
-    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    db_2: Session,
+    client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     token = generate_password_reset_token(email=settings.FIRST_SUPERUSER)
-    data = {"new_password": "changethis", "token": token}
+    data = {"new_password": "DevOpsDOjO7", "token": token}
     r = client.post(
         f"{settings.API_V1_STR}/reset-password/",
         headers=superuser_token_headers,
@@ -83,13 +87,15 @@ def test_reset_password(
     assert r.json() == {"message": "Password updated successfully"}
 
     user_query = select(User).where(User.email == settings.FIRST_SUPERUSER)
-    user = db.exec(user_query).first()
+    user = db_2.exec(user_query).first()
     assert user
     assert verify_password(data["new_password"], user.hashed_password)
 
 
 def test_reset_password_invalid_token(
-    client: TestClient, superuser_token_headers: dict[str, str]
+    db: Session,
+    client: TestClient, 
+    superuser_token_headers: dict[str, str]
 ) -> None:
     data = {"new_password": "changethis", "token": "invalid"}
     r = client.post(

@@ -23,7 +23,8 @@ def test_create_item(
 
 
 def test_read_item(
-    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    db: Session,
+    client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     item = create_random_item(db)
     response = client.get(
@@ -39,6 +40,7 @@ def test_read_item(
 
 
 def test_read_item_not_found(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     response = client.get(
@@ -51,7 +53,8 @@ def test_read_item_not_found(
 
 
 def test_read_item_not_enough_permissions(
-    client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    db: Session,
+    client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     item = create_random_item(db)
     response = client.get(
@@ -64,7 +67,8 @@ def test_read_item_not_enough_permissions(
 
 
 def test_read_items(
-    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    db: Session,
+    client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     create_random_item(db)
     create_random_item(db)
@@ -78,7 +82,8 @@ def test_read_items(
 
 
 def test_update_item(
-    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    db: Session,
+    client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     item = create_random_item(db)
     data = {"title": "Updated title", "description": "Updated description"}
@@ -96,6 +101,7 @@ def test_update_item(
 
 
 def test_update_item_not_found(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     data = {"title": "Updated title", "description": "Updated description"}
@@ -110,7 +116,8 @@ def test_update_item_not_found(
 
 
 def test_update_item_not_enough_permissions(
-    client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    db: Session,
+    client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     item = create_random_item(db)
     data = {"title": "Updated title", "description": "Updated description"}
@@ -125,7 +132,8 @@ def test_update_item_not_enough_permissions(
 
 
 def test_delete_item(
-    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    db: Session,
+    client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     item = create_random_item(db)
     response = client.delete(
@@ -138,6 +146,7 @@ def test_delete_item(
 
 
 def test_delete_item_not_found(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     response = client.delete(
@@ -150,7 +159,8 @@ def test_delete_item_not_found(
 
 
 def test_delete_item_not_enough_permissions(
-    client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    db: Session,
+    client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     item = create_random_item(db)
     response = client.delete(

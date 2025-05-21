@@ -135,6 +135,7 @@ jobs:
           git pull --rebase origin $BRANCH_NAME
           git push origin $BRANCH_NAME
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
 

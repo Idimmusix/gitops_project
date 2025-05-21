@@ -10,7 +10,7 @@ from app.models import User, UserCreate
 from app.tests.utils.utils import random_email, random_lower_string
 
 
-def test_get_users_superuser_me(
+def test_get_users_superuser_me(db: Session, 
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     r = client.get(f"{settings.API_V1_STR}/users/me", headers=superuser_token_headers)
@@ -22,6 +22,7 @@ def test_get_users_superuser_me(
 
 
 def test_get_users_normal_user_me(
+    db: Session,
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     r = client.get(f"{settings.API_V1_STR}/users/me", headers=normal_user_token_headers)
@@ -102,6 +103,7 @@ def test_get_existing_user_current_user(client: TestClient, db: Session) -> None
 
 
 def test_get_existing_user_permissions_error(
+    db: Session,
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     r = client.get(
@@ -132,6 +134,7 @@ def test_create_user_existing_username(
 
 
 def test_create_user_by_normal_user(
+    db: Session,
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     username = random_email()
@@ -230,6 +233,7 @@ def test_update_password_me(
 
 
 def test_update_password_me_incorrect_password(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     new_password = random_lower_string()
@@ -263,6 +267,7 @@ def test_update_user_me_email_exists(
 
 
 def test_update_password_me_same_password_error(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     data = {
@@ -304,7 +309,7 @@ def test_register_user(client: TestClient, db: Session) -> None:
         assert verify_password(password, user_db.hashed_password)
 
 
-def test_register_user_forbidden_error(client: TestClient) -> None:
+def test_register_user_forbidden_error(db: Session, client: TestClient) -> None:
     with patch("app.core.config.settings.USERS_OPEN_REGISTRATION", False):
         username = random_email()
         password = random_lower_string()
@@ -320,7 +325,7 @@ def test_register_user_forbidden_error(client: TestClient) -> None:
         )
 
 
-def test_register_user_already_exists_error(client: TestClient) -> None:
+def test_register_user_already_exists_error(db: Session, client: TestClient) -> None:
     with patch("app.core.config.settings.USERS_OPEN_REGISTRATION", True):
         password = random_lower_string()
         full_name = random_lower_string()
@@ -367,6 +372,7 @@ def test_update_user(
 
 
 def test_update_user_not_exists(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     data = {"full_name": "Updated_full_name"}
@@ -434,6 +440,7 @@ def test_delete_user_me(client: TestClient, db: Session) -> None:
 
 
 def test_delete_user_me_as_superuser(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     r = client.delete(
@@ -465,6 +472,7 @@ def test_delete_user_super_user(
 
 
 def test_delete_user_not_found(
+    db: Session,
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
     r = client.delete(
