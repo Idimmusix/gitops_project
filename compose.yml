@@ -2,7 +2,7 @@ name: gitops
 
 services:
   frontend:
-    image: maestrops/frontend:9-1d8bdd2
+    image: ghcr.io/gitops_project/frontend:latest
     env_file:
       - frontend/.env
     depends_on:
@@ -27,7 +27,7 @@ services:
       - app-network
 
   backend:
-    image: maestrops/backend:8-cbbea3f
+    image: ghcr.io/gitops_project/backend:latest
     env_file:
       - backend/.env
     networks:

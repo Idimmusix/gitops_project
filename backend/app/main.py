@@ -7,8 +7,8 @@ from app.api.main import api_router
 from app.core.config import settings
 
 
-def custom_generate_unique_id(route: APIRoute) -> str:
-    return f"{route.tags[0]}-{route.name}"
+# def custom_generate_unique_id(route: APIRoute) -> str:
+#     return f"{route.tags[0]}-{route.name}"
 
 
 if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
@@ -17,7 +17,7 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    generate_unique_id_function=custom_generate_unique_id,
+    # generate_unique_id_function=custom_generate_unique_id,
 )
 
 # Set all CORS enabled origins
@@ -33,3 +33,16 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+@app.get("/")
+async def root() -> None:
+    """Root endpoint."""
+    return {"message": "Welcome to the FastAPI application!"}
+@app.get("/health")
+async def health() -> None:
+    """Health check endpoint."""
+    return {"status": "healthy"}
+@app.get("/ready")
+async def ready() -> None:
+    """Readiness check endpoint."""
+    return {"status": "ready"}
