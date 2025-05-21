@@ -2,7 +2,7 @@ name: gitops
 
 services:
   frontend:
-    image: ghcr.io/idimmusix/gitops_project-frontend:latest
+    image: ghcr.io/idimmusix/gitops_project-frontend:8-9e8f579
     env_file:
       - frontend/.env
     depends_on:
